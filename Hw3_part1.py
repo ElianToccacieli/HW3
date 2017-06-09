@@ -17,6 +17,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 
 from sklearn import metrics
+from sklearn.neighbors import KNeighborsClassifier
 
 import pprint as pp
 
@@ -75,32 +76,35 @@ def create_Training_Test_data(data_folder_training_set, data_folder_test_set):
                                  )
 
     ## classifier
-    nbc = MultinomialNB()
+    nbc = KNeighborsClassifier()
 
     ## With a Pipeline object we can assemble several steps
-    ## that can be cross-validated together while setting different parameters.
+    ## that can be cross-validated together while setting different parameters. pipeline ti da tt le cose che devi settare
 
     pipeline = Pipeline([
         ('vect', vectorizer),
         ('nbc', nbc),
     ])
 
+
     ## Setting parameters.
     ## Dictionary in which:
     ##  Keys are parameters of objects in the pipeline.
-    ##  Values are set of values to try for a particular parameter.
+    ##  Values are set of values to try for a particular parameter. (prende più parole insieme e fa tf idf
     parameters = {
         'vect__tokenizer': [None, stemming_tokenizer],
+        'vect__stop_words': [None, 'english'],
         'vect__ngram_range': [(1, 1), (1, 2), ],
-        'nbc__alpha': [.001, .01, 1.0, 10.],
+        'nbc__n_neighbors': [3, 5],
     }
+
 
     ## Create a Grid-Search-Cross-Validation object
     ## to find in an automated fashion the best combination of parameters.
     grid_search = GridSearchCV(pipeline,
                                parameters,
-                               scoring=metrics.make_scorer(metrics.average_precision_score, average='weighted'),
-                               cv=3,
+                               scoring=metrics.make_scorer(metrics.matthews_corrcoef),
+                               cv=10,
                                n_jobs=2,
                                verbose=10)
 
@@ -109,6 +113,31 @@ def create_Training_Test_data(data_folder_training_set, data_folder_test_set):
     print()
     grid_search.fit(X_train, Y_train)
     print()
+
+    ## Print results for each combination of parameters.
+    number_of_candidates = len(grid_search.cv_results_['params'])
+    print("Results:")
+    for i in range(number_of_candidates):
+        print(i, 'params - %s; mean - %0.3f; std - %0.3f' %
+              (grid_search.cv_results_['params'][i],
+               grid_search.cv_results_['mean_test_score'][i],
+               grid_search.cv_results_['std_test_score'][i]))
+
+    print()
+    print("Best Estimator:")
+    pp.pprint(grid_search.best_estimator_)
+    print()
+    print("Best Parameters:")
+    pp.pprint(grid_search.best_params_)
+    print()
+    print("Used Scorer Function:")
+    pp.pprint(grid_search.scorer_)
+    print()
+    print("Number of Folds:")
+    pp.pprint(grid_search.n_splits_)
+    print()
+
+
     ## Let's train the classifier that achieved the best performance,
     ## according to the selected scoring-function.
     Y_predicted = grid_search.predict(X_test)
@@ -124,13 +153,18 @@ def create_Training_Test_data(data_folder_training_set, data_folder_test_set):
     print()
     "----------------------------------------------------"
     print()
+
+
     ## Compute the confusion matrix
     confusion_matrix = metrics.confusion_matrix(Y_test, Y_predicted)
     print()
     print("Confusion Matrix: True-Classes X Predicted-Classes")
     print(confusion_matrix)
     print()
-    return confusion_matrix
+    acc = metrics.accuracy_score(Y_test, Y_predicted)
+    matthew_coeff=metrics.matthews_corrcoef(Y_test, Y_predicted)
+    return acc, matthew_coeff
+
 
 
 if __name__ == '__main__':
