@@ -161,7 +161,9 @@ def create_Training_Test_data(data_folder_training_set, data_folder_test_set):
     print("Confusion Matrix: True-Classes X Predicted-Classes")
     print(confusion_matrix)
     print()
+    #accuracy
     acc = metrics.accuracy_score(Y_test, Y_predicted)
+    #compute the matthew coefficent
     matthew_coeff=metrics.matthews_corrcoef(Y_test, Y_predicted)
     return acc, matthew_coeff
 
