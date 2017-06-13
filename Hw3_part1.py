@@ -1,16 +1,15 @@
 from nltk.stem.snowball import EnglishStemmer
 from nltk import word_tokenize
-import numpy as np
 from Classifier import Classifier
+
+stemmer = EnglishStemmer()
 
 def stemming_tokenizer(text):
     stemmed_text = [stemmer.stem(word) for word in word_tokenize(text, language='english')]
     return stemmed_text
 
-
 if __name__ == '__main__':
 
-    stemmer = EnglishStemmer()
 
     knn_parameters = {
         'vect__tokenizer': [None, stemming_tokenizer],
