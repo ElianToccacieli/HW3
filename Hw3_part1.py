@@ -106,14 +106,13 @@ def create_Training_Test_data(data_folder_training_set, data_folder_test_set):
                                scoring=metrics.make_scorer(metrics.matthews_corrcoef),
                                cv=10,
                                n_jobs=2,
-                               verbose=10)
+                               verbose=0)
 
     ## Start an exhaustive search to find the best combination of parameters considering the select scoring-function,
     ## on the entire original TRAINING-Set
     print()
     grid_search.fit(X_train, Y_train)
     print()
-
     ## Print results for each combination of parameters.
     number_of_candidates = len(grid_search.cv_results_['params'])
     print("Results:")
