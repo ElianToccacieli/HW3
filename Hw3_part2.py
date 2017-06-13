@@ -34,6 +34,7 @@ if __name__ == '__main__':
         'vect__ngram_range': [(1, 1), (1, 2), ],
     }
 
+
     print("Starting K-nearest neighbors")
 
     knn_classifier = Classifier(knn_parameters, classifier_flag = "knn")
@@ -41,14 +42,22 @@ if __name__ == '__main__':
     knn_classifier.fit_grid_search()
     knn_classifier.predict_grid_search()
 
+    print()
+    print("----------------------")
     print("Starting Support Vector Machine")
+    print("----------------------")
+    print()
 
     svm_classifier = Classifier(svm_parameters, classifier_flag="svm")
     svm_classifier.create_Training_Test_data("./Positve_negative_sentences/Training","./Positve_negative_sentences/Test")
     svm_classifier.fit_grid_search()
     svm_classifier.predict_grid_search()
 
+    print()
+    print("----------------------")
     print("Starting Naive Bayes classifier")
+    print("----------------------")
+    print()
 
     nb_classifier = Classifier(nb_parameters, classifier_flag="nb")
     nb_classifier.create_Training_Test_data("./Positve_negative_sentences/Training",
