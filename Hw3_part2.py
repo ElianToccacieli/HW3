@@ -2,6 +2,7 @@ from nltk.stem.snowball import EnglishStemmer
 from nltk import word_tokenize
 import numpy as np
 from Classifier import Classifier
+np.seterr(divide='ignore', invalid='ignore')
 
 stemmer = EnglishStemmer()
 
@@ -18,15 +19,19 @@ if __name__ == '__main__':
         'vect__tokenizer': [None, stemming_tokenizer],
         'vect__stop_words': [None, 'english'],
         'vect__ngram_range': [(1, 1), (1, 2), ],
-        'classifier__n_neighbors': [3, 5],
+        'classifier__n_neighbors': [3, 5,7,9],
     }
+
+
+    C = np.array([10**i for i in range(-2,3)])
 
     svm_parameters = {
         'vect__tokenizer': [None, stemming_tokenizer],
         'vect__stop_words': [None, 'english'],
         'vect__ngram_range': [(1, 1), (1, 2), ],
-        'classifier__C': np.array([1,10,100,1000]),
-        'classifier__gamma': np.array([0.1, 0.25]),
+        'classifier__C': C,
+        'classifier__kernel': ('rbf','linear','poly'),
+        'classifier__gamma': np.array([ 0.1, 0.25, 1]),
 
     }
 
@@ -34,6 +39,7 @@ if __name__ == '__main__':
         'vect__tokenizer': [None, stemming_tokenizer],
         'vect__stop_words': [None, 'english'],
         'vect__ngram_range': [(1, 1), (1, 2), ],
+        'classifier__alpha': (1, 0.1, 0.01, 0.001, 0.0001, 0.00001)
     }
 
 
